@@ -1,4 +1,8 @@
 import sqlite3
+import hashlib
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 def calculate_cgpa(student_id):
     conn = sqlite3.connect('mpacc.db')
@@ -91,6 +95,26 @@ def get_upcoming_events(student_id):
     events = [{'type': 'Holiday', 'date': row[0], 'description': row[1]} 
               for row in cursor.fetchall()]
     
+    cursor.execute('''
+        SELECT due_date, description FROM assignments
+        WHERE student_id = ? AND due_date >= date('now')
+        ORDER BY due_date
+    ''', (student_id,))
+    
+    events.extend([{'type': 'Assignment', 'date': row[0], 'description': row[1]} 
+                   for row in cursor.fetchall()])
+    
+    cursor.execute('''
+        SELECT exam_date, description FROM tests
+        WHERE student_id = ? AND exam_date >= date('now')
+        ORDER BY exam_date
+    ''', (student_id,))
+    
+    events.extend([{'type': 'Exam', 'date': row[0], 'description': row[1]} 
+                   for row in cursor.fetchall()])
+    
+    events.sort(key=lambda x: x['date'])
+    
     conn.close()
     return events
 
@@ -99,7 +123,7 @@ def authenticate_user(username, password):
     cursor = conn.cursor()
     
     cursor.execute('SELECT user_id, role FROM users WHERE username = ? AND password = ?',
-                   (username, password))
+                   (username, hash_password(password)))
     result = cursor.fetchone()
     conn.close()
     

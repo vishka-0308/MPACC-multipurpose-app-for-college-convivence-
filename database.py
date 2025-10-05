@@ -1,5 +1,9 @@
 import sqlite3
+import hashlib
 from datetime import datetime, timedelta
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 def init_database():
     conn = sqlite3.connect('mpacc.db')
@@ -50,6 +54,8 @@ def init_database():
             class_id INTEGER,
             score REAL,
             max_score REAL DEFAULT 100,
+            due_date TEXT,
+            description TEXT,
             FOREIGN KEY (student_id) REFERENCES students(student_id),
             FOREIGN KEY (class_id) REFERENCES classes(class_id)
         )
@@ -62,6 +68,8 @@ def init_database():
             class_id INTEGER,
             score REAL,
             max_score REAL DEFAULT 100,
+            exam_date TEXT,
+            description TEXT,
             FOREIGN KEY (student_id) REFERENCES students(student_id),
             FOREIGN KEY (class_id) REFERENCES classes(class_id)
         )
@@ -95,13 +103,13 @@ def init_database():
 
 def populate_dummy_data(cursor):
     cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                   ('admin1', 'adminpass', 'admin'))
+                   ('admin1', hash_password('adminpass'), 'admin'))
     cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                   ('teacher1', 'teachpass', 'teacher'))
+                   ('teacher1', hash_password('teachpass'), 'teacher'))
     cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                   ('student1', 'studpass', 'student'))
+                   ('student1', hash_password('studpass'), 'student'))
     cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                   ('student2', 'studpass2', 'student'))
+                   ('student2', hash_password('studpass2'), 'student'))
     
     cursor.execute("INSERT INTO teachers (name, user_id) VALUES (?, ?)",
                    ('Dr. Rajesh Kumar', 2))
@@ -118,26 +126,31 @@ def populate_dummy_data(cursor):
     cursor.execute("INSERT INTO classes (teacher_id, subject_name, credits) VALUES (?, ?, ?)",
                    (1, 'Operating Systems', 4))
     
-    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (1, 1, 85, 100))
-    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (1, 2, 90, 100))
-    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (2, 1, 78, 100))
+    today = datetime.now()
+    assignment1_due = (today + timedelta(days=5)).strftime('%Y-%m-%d')
+    assignment2_due = (today + timedelta(days=10)).strftime('%Y-%m-%d')
+    test1_date = (today + timedelta(days=12)).strftime('%Y-%m-%d')
+    test2_date = (today + timedelta(days=18)).strftime('%Y-%m-%d')
     
-    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (1, 1, 88, 100))
-    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (1, 2, 92, 100))
-    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score) VALUES (?, ?, ?, ?)",
-                   (2, 1, 82, 100))
+    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score, due_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (1, 1, 85, 100, assignment1_due, 'Binary Tree Implementation'))
+    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score, due_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (1, 2, 90, 100, assignment2_due, 'SQL Query Optimization'))
+    cursor.execute("INSERT INTO assignments (student_id, class_id, score, max_score, due_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (2, 1, 78, 100, assignment1_due, 'Binary Tree Implementation'))
+    
+    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score, exam_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (1, 1, 88, 100, test1_date, 'Mid-Term Exam - Data Structures'))
+    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score, exam_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (1, 2, 92, 100, test2_date, 'Mid-Term Exam - DBMS'))
+    cursor.execute("INSERT INTO tests (student_id, class_id, score, max_score, exam_date, description) VALUES (?, ?, ?, ?, ?, ?)",
+                   (2, 1, 82, 100, test1_date, 'Mid-Term Exam - Data Structures'))
     
     cursor.execute("INSERT INTO timetable (class_id, day, time, subject) VALUES (?, ?, ?, ?)",
                    (1, 'Monday', '9:00 AM - 10:00 AM', 'Data Structures'))
     cursor.execute("INSERT INTO timetable (class_id, day, time, subject) VALUES (?, ?, ?, ?)",
                    (2, 'Tuesday', '10:00 AM - 11:00 AM', 'Database Management Systems'))
     
-    today = datetime.now()
     holiday1 = (today + timedelta(days=7)).strftime('%Y-%m-%d')
     holiday2 = (today + timedelta(days=15)).strftime('%Y-%m-%d')
     
