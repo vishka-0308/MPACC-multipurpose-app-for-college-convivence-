@@ -112,12 +112,14 @@ class MPACCApp:
     def show_student_dashboard(self):
         self.clear_frame()
         student_info = utils.get_student_info(self.current_user['user_id'])
-        self.current_frame = student_ui.StudentDashboard(self.root, student_info, self.logout)
+        if student_info:
+            self.current_frame = student_ui.StudentDashboard(self.root, student_info, self.logout)
     
     def show_teacher_dashboard(self):
         self.clear_frame()
         teacher_info = utils.get_teacher_info(self.current_user['user_id'])
-        self.current_frame = teacher_ui.TeacherDashboard(self.root, teacher_info, self.logout)
+        if teacher_info:
+            self.current_frame = teacher_ui.TeacherDashboard(self.root, teacher_info, self.logout)
     
     def show_admin_dashboard(self):
         self.clear_frame()
