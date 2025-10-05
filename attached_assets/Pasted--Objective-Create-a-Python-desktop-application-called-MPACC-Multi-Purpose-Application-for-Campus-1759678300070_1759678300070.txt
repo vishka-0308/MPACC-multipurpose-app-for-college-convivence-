@@ -1,0 +1,153 @@
+🧠 Objective
+
+Create a Python desktop application called MPACC (Multi Purpose Application for Campus Convenience) using Tkinter for the user interface and SQLite for the database.
+
+The app should provide separate dashboards for students, teachers, and administrators.
+
+⚙️ Tech Stack
+
+Language: Python 3
+
+UI Framework: Tkinter
+
+Database: SQLite (local persistent DB)
+
+No external libraries — only tkinter and sqlite3.
+
+🧩 Functional Requirements
+1. Welcome / Login Page
+
+A single Tkinter window with three login roles:
+
+Admin
+
+Teacher
+
+Student
+
+Each role uses username and password from the database.
+
+After successful login, open the corresponding dashboard.
+
+2. Student Dashboard
+
+Show student’s name, ID, and department.
+
+Display a calendar-like view listing:
+
+Upcoming exams
+
+Pending assignments
+
+Declared holidays
+
+Sidebar navigation:
+
+Home (calendar view)
+
+“CGPA & Scores” (shows scores and CGPA)
+
+CGPA Formula (Anna University):
+
+CGPA = (Σ (grade point × credit)) / (Σ credits)
+
+
+Pull scores from assignments and tests in the database.
+
+3. Teacher Dashboard
+
+Show list of classes handled by the teacher.
+
+Clicking a class shows student list.
+
+Clicking a student allows updating assignment and test scores, stored in the DB.
+
+4. Admin Dashboard
+
+Sidebar or tabs for:
+
+Manage Timetable (add/edit schedule)
+
+Manage Holidays (add/remove holidays → appears in student calendar)
+
+Manage Accounts (create/delete students, teachers, admins)
+
+View All Students (access and edit student data)
+
+🗃️ Database (SQLite)
+
+Tables:
+
+users(user_id, username, password, role)
+
+students(student_id, name, dept, user_id)
+
+teachers(teacher_id, name, user_id)
+
+classes(class_id, teacher_id, subject_name)
+
+assignments(id, student_id, class_id, score)
+
+tests(id, student_id, class_id, score)
+
+timetable(id, class_id, day, time, subject)
+
+holidays(id, date, description)
+
+🧾 Include Initialization with Dummy Data
+
+When the app first runs, create the database and insert sample records:
+
+Admin: username = admin1, password = adminpass
+
+Teacher: username = teacher1, password = teachpass
+
+Students:
+
+student1, password = studpass, dept = CSE
+
+student2, password = studpass2, dept = ECE
+
+Add at least one class, one test, one assignment, and one holiday for demo.
+
+📁 Folder Layout
+MPACC/
+├── main.py            # Entry point + login + navigation
+├── database.py        # Handles SQLite creation + dummy data
+├── student_ui.py      # Student dashboard + CGPA logic
+├── teacher_ui.py      # Teacher dashboard + score updates
+├── admin_ui.py        # Admin dashboard + management tools
+└── utils.py           # Helper functions (CGPA, DB ops)
+
+🎨 UI Guidelines
+
+Use Frame switching (pack_forget() or grid_remove()) for navigation.
+
+Keep a clean layout: blue & white theme, clear labels and buttons.
+
+Each dashboard should have a sidebar (buttons to switch pages).
+
+Use Treeview for listing students, classes, or timetables.
+
+🚀 Deliverables
+
+A Tkinter app that:
+
+Launches with login screen
+
+Authenticates user
+
+Opens the correct dashboard based on role
+
+Displays student CGPA, calendar, and holiday updates
+
+Allows teacher and admin actions as described
+
+Stores all data persistently in SQLite
+
+💡 Tip for Replit:
+After pasting this prompt, say:
+
+“Please generate all project files and ensure it runs locally with no missing imports.”
+
+Replit AI will then create all necessary .py files and you can test the app instantly.
