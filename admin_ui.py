@@ -48,7 +48,12 @@ class AdminDashboard(tk.Frame):
                                command=self.show_students, cursor='hand2', anchor='w', padx=20)
         btn_students.pack(fill=tk.X, pady=5)
         
-        tk.Frame(self.sidebar, height=1, bg='#3b82f6').pack(fill=tk.X, pady=200)
+        btn_complaints = tk.Button(self.sidebar, text="Complaints Management", font=("Arial", 11), 
+                                  bg='#1e3a8a', fg='white', bd=0, 
+                                  command=self.show_complaints, cursor='hand2', anchor='w', padx=20)
+        btn_complaints.pack(fill=tk.X, pady=5)
+        
+        tk.Frame(self.sidebar, height=1, bg='#3b82f6').pack(fill=tk.X, pady=150)
         
         btn_logout = tk.Button(self.sidebar, text="Logout", font=("Arial", 11), 
                              bg='#dc2626', fg='white', bd=0, 
@@ -287,3 +292,117 @@ class AdminDashboard(tk.Frame):
         
         tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    
+    def show_complaints(self):
+        self.clear_content()
+        
+        tk.Label(self.content, text="Complaints Management", font=("Arial", 24, "bold"), 
+                bg='#ffffff', fg='#1e3a8a').pack(pady=20, anchor='w', padx=30)
+        
+        tree_frame = tk.Frame(self.content, bg='#ffffff')
+        tree_frame.pack(pady=10, padx=30, fill=tk.BOTH, expand=True)
+        
+        tree = ttk.Treeview(tree_frame, columns=('ID', 'Student Name', 'Student ID', 'Complaint', 'Status'), 
+                           show='headings', height=15)
+        
+        tree.heading('ID', text='Complaint ID')
+        tree.heading('Student Name', text='Student Name')
+        tree.heading('Student ID', text='Student ID')
+        tree.heading('Complaint', text='Complaint Text')
+        tree.heading('Status', text='Status')
+        
+        tree.column('ID', width=80)
+        tree.column('Student Name', width=150)
+        tree.column('Student ID', width=100)
+        tree.column('Complaint', width=300)
+        tree.column('Status', width=100)
+        
+        conn = sqlite3.connect('mpacc.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, name, student_id, complaint_text, status FROM complaints ORDER BY id DESC')
+        complaints = cursor.fetchall()
+        conn.close()
+        
+        for complaint in complaints:
+            complaint_id, name, student_id, text, status = complaint
+            tag = 'pending' if status == 'Pending' else 'resolved'
+            tree.insert('', tk.END, values=(complaint_id, name, student_id, text, status), tags=(tag,))
+        
+        tree.tag_configure('pending', background='#fef3c7')
+        tree.tag_configure('resolved', background='#d1fae5')
+        
+        scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=tree.yview)
+        tree.configure(yscroll=scrollbar.set)
+        
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        buttons_frame = tk.Frame(self.content, bg='#ffffff')
+        buttons_frame.pack(pady=10, padx=30, fill=tk.X)
+        
+        def mark_pending():
+            selected = tree.selection()
+            if not selected:
+                messagebox.showerror("Error", "Please select a complaint")
+                return
+            
+            complaint_id = tree.item(selected[0])['values'][0]
+            
+            conn = sqlite3.connect('mpacc.db')
+            cursor = conn.cursor()
+            cursor.execute('UPDATE complaints SET status = ? WHERE id = ?', ('Pending', complaint_id))
+            conn.commit()
+            conn.close()
+            
+            messagebox.showinfo("Success", "Complaint marked as Pending")
+            self.show_complaints()
+        
+        def mark_resolved():
+            selected = tree.selection()
+            if not selected:
+                messagebox.showerror("Error", "Please select a complaint")
+                return
+            
+            complaint_id = tree.item(selected[0])['values'][0]
+            
+            conn = sqlite3.connect('mpacc.db')
+            cursor = conn.cursor()
+            cursor.execute('UPDATE complaints SET status = ? WHERE id = ?', ('Resolved', complaint_id))
+            conn.commit()
+            conn.close()
+            
+            messagebox.showinfo("Success", "Complaint marked as Resolved")
+            self.show_complaints()
+        
+        def delete_complaint():
+            selected = tree.selection()
+            if not selected:
+                messagebox.showerror("Error", "Please select a complaint")
+                return
+            
+            complaint_id = tree.item(selected[0])['values'][0]
+            
+            confirm = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this complaint?")
+            if not confirm:
+                return
+            
+            conn = sqlite3.connect('mpacc.db')
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM complaints WHERE id = ?', (complaint_id,))
+            conn.commit()
+            conn.close()
+            
+            messagebox.showinfo("Success", "Complaint deleted")
+            self.show_complaints()
+        
+        btn_pending = tk.Button(buttons_frame, text="Mark as Pending", font=("Arial", 11), 
+                              bg='#f59e0b', fg='white', command=mark_pending)
+        btn_pending.pack(side=tk.LEFT, padx=5)
+        
+        btn_resolved = tk.Button(buttons_frame, text="Mark as Resolved", font=("Arial", 11), 
+                               bg='#10b981', fg='white', command=mark_resolved)
+        btn_resolved.pack(side=tk.LEFT, padx=5)
+        
+        btn_delete = tk.Button(buttons_frame, text="Delete Complaint", font=("Arial", 11), 
+                             bg='#dc2626', fg='white', command=delete_complaint)
+        btn_delete.pack(side=tk.LEFT, padx=5)
