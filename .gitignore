@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database (do not commit sensitive data)
+mpacc.db
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# IDEs and editors
+.vscode/
+.idea/
+/.venv/
+venv/
+env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Replit files
+.replit
+replit.md
+
+# Python virtual env
+env/
+.env
