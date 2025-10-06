@@ -94,6 +94,16 @@ def init_database():
         )
     ''')
     
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS complaints (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            name TEXT,
+            complaint_text TEXT,
+            status TEXT DEFAULT 'Pending'
+        )
+    ''')
+    
     cursor.execute('SELECT COUNT(*) FROM users')
     if cursor.fetchone()[0] == 0:
         populate_dummy_data(cursor)
@@ -158,6 +168,11 @@ def populate_dummy_data(cursor):
                    (holiday1, 'Diwali Festival'))
     cursor.execute("INSERT INTO holidays (date, description) VALUES (?, ?)",
                    (holiday2, 'Annual Day'))
+    
+    cursor.execute("INSERT INTO complaints (student_id, name, complaint_text, status) VALUES (?, ?, ?, ?)",
+                   (1, 'Arun Prakash', 'Wi-Fi not working in lab.', 'Pending'))
+    cursor.execute("INSERT INTO complaints (student_id, name, complaint_text, status) VALUES (?, ?, ?, ?)",
+                   (2, 'Priya Sharma', 'Projector not working in class.', 'Resolved'))
 
 if __name__ == '__main__':
     init_database()

@@ -1,0 +1,101 @@
+Update the existing MPACC Tkinter + SQLite project to include a Student Complaint Portal and Admin Complaint Management system.
+
+🧠 Requirements
+
+Students:
+
+Add a “Complaint Portal” button in the student sidebar.
+
+When clicked, it opens a frame where students can:
+
+See two input fields:
+
+Name (auto-filled from logged-in student’s name)
+
+Student ID (auto-filled)
+
+A large text box to type their complaint.
+
+A “Submit Complaint” button that saves the complaint into a new SQLite table called complaints.
+
+Below the form, show a list (Tkinter Treeview or simple labels) of all complaints made by this student, with columns:
+
+Complaint ID
+
+Complaint Text
+
+Status (Pending or Resolved)
+
+Whenever the admin updates a complaint status, the student’s complaint list reflects the change automatically (reload when page opened).
+
+Admin:
+
+Add a new sidebar option called “Complaints Management.”
+
+When clicked, display a list/table of all complaints from all students with columns:
+
+Complaint ID
+
+Student Name
+
+Student ID
+
+Complaint Text
+
+Status
+
+For each complaint, add three buttons or dropdown options:
+
+Mark as Pending → sets status='Pending' in DB.
+
+Mark as Resolved → sets status='Resolved'.
+
+Delete Complaint → removes the record from DB.
+
+Whenever a status is changed or deleted, the admin view refreshes automatically.
+
+Database Update:
+
+Add a new table in SQLite:
+
+CREATE TABLE IF NOT EXISTS complaints (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER,
+    name TEXT,
+    complaint_text TEXT,
+    status TEXT DEFAULT 'Pending'
+);
+
+
+When initializing the DB, insert a couple of dummy complaints:
+
+INSERT INTO complaints (student_id, name, complaint_text, status)
+VALUES (1, 'Arun Kumar', 'Wi-Fi not working in lab.', 'Pending'),
+       (2, 'Priya Sharma', 'Projector not working in class.', 'Resolved');
+
+
+UI & Integration:
+
+Use Tkinter Frames for the complaint portal and admin management views.
+
+Students can only submit or view their own complaints.
+
+Admin can see and update all complaints.
+
+Use Treeview for listing complaints for clarity.
+
+Ensure data updates (status/resolution/deletion) are reflected instantly.
+
+Optional polish:
+
+Add success/error popups (e.g., using tkinter.messagebox).
+
+Use color coding: pending = yellow, resolved = green.
+
+🎯 Deliverable
+
+Updated project with full complaint submission and admin resolution system integrated.
+
+Database updated automatically with a new complaints table and dummy entries.
+
+Student and admin dashboards both support complaint management functionality.
