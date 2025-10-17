@@ -11,10 +11,19 @@ class StudentDashboard(tk.Frame):
         
         self.student_info = student_info
         self.logout_callback = logout_callback
-        
+        # Top header / top-right logout
+        self.topbar = tk.Frame(self, bg='#ffffff', height=50)
+        self.topbar.pack(side=tk.TOP, fill=tk.X)
+        tk.Label(self.topbar, text="Student Dashboard", font=("Arial", 14, "bold"),
+                 bg='#ffffff', fg='#1e3a8a').pack(side=tk.LEFT, padx=20, pady=10)
+        btn_logout_top = tk.Button(self.topbar, text="Logout", font=("Arial", 10),
+                                   bg='#dc2626', fg='white', bd=0,
+                                   command=self.logout_callback, cursor='hand2')
+        btn_logout_top.pack(side=tk.RIGHT, padx=10, pady=8)
+
         self.sidebar = tk.Frame(self, bg='#1e3a8a', width=200)
         self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
-        
+
         self.content = tk.Frame(self, bg='#ffffff')
         self.content.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
